@@ -28,9 +28,8 @@ exports.getscore = async (req, res) => {
     if (req.params.username == null) return res.status(400).send({ message: "Username can not be empty" });
     const username = req.params.username
     const recentScore = await Score.find({ username }).sort({ createdAt: -1 }).limit(1)
-    console.log(recentScore)
-    if (!recentScore) return res.status(404).json("Score with that username does not exist")
-    return res.status(200).json({ recentScore })
+    if (recentScore.length == 0) return res.status(404).json("Score with that username does not exist")
+    return res.status(200).json({ score: recentScore[0] })
 }
 
 exports.getaveragescores = async (_, res) => {
