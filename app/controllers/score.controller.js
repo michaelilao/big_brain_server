@@ -9,7 +9,7 @@ exports.addscore = async (req, res) => {
     const username = req.body.username
     const score = req.body.score
     if (username == null) return res.status(403).json({ error: "Enter valid username" })
-    if (score.length != 6) return res.status(403).json({ error: "Not enough Mini-game scores" })
+    if (score.length != 5) return res.status(403).json({ error: "Not enough Mini-game scores" })
     const newscore = new Score({
         username,
         score,
@@ -27,7 +27,8 @@ exports.getscore = async (req, res) => {
     }
     if (req.params.username == null) return res.status(400).send({ message: "Username can not be empty" });
     const username = req.params.username
-    const recentScore = await Score.find({ username }).sort({ createdAt: -1 }).limit(1)
+    const recentScore = await Score.find({ username:'Michaelilao' }).sort({ createdAt: -1 }).limit(1)
+    console.log(recentScore)
     if (recentScore.length == 0) return res.status(404).json("Score with that username does not exist")
     return res.status(200).json({ score: recentScore[0] })
 }
