@@ -2,6 +2,12 @@ const bcrypt = require('bcrypt');
 const fetch = require('node-fetch')
 const Score = require('../models/score.model.js')
 
+const calculatePercentile = (score) => {
+    if (score >= 100) {
+        return 9
+    }
+    return Math.floor(score/10)
+}
 exports.addscore = async (req, res) => {
     if (!req.body) return res.status(400).send({
         message: "Missing data"
@@ -41,13 +47,15 @@ exports.getaveragescores = async (_, res) => {
     if (!allScores) return res.status(404).json("Request could not be handled at this time")
     const avgMiniGameScores = [0, 0, 0, 0, 0, 0]
     const stdDeviation = [0, 0, 0, 0, 0, 0]
-    const miniGameScores = [[],[],[],[],[],[]]
+    const percentileMiniGameScores = [Array(10).fill(0),Array(10).fill(0),Array(10).fill(0),Array(10).fill(0),Array(10).fill(0)]
+    const miniGameScores = [[],[],[],[],[]]
     //Calculating means
     allScores.forEach(playerScore => {
         numScores = allScores.length
         playerScore.score.forEach((score, index) => {
             avgMiniGameScores[index] += (score / numScores)
             miniGameScores[index].push(score)
+            percentileMiniGameScores[index][calculatePercentile(score)]++
         })
     });
 
@@ -69,8 +77,9 @@ exports.getaveragescores = async (_, res) => {
         avgMiniGameScores[index] = avg.toFixed(2)
     })
 
+
     return res.status(200).json({
-        miniGameScores: miniGameScores,
+        percentileMiniGameScores: percentileMiniGameScores,
         avgFinalScore: avgFinalScore,
         avgMiniGameScores: avgMiniGameScores,
         numUsers: allScores.length,
