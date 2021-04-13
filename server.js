@@ -1,14 +1,16 @@
 const express = require('express');
 const cors = require('cors')
-
+const dotenv = require('dotenv')
+dotenv.config()
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
 
 const dbConfig = require('./config/db.config.js');
 const envConfig = require('./config/env.config.js');
-
+const port = process.env.PORT || envConfig.port;
 const app = express();
+
 app.use(cors())
 
 app.use(express.urlencoded({ extended: true }))
@@ -16,14 +18,13 @@ app.use(express.json())
 app.get('/', (req, res) => {
     res.json({"message": "Welcome to the Big Brain Server"});
 });
-app.listen(envConfig.port, () => {
-    console.log("Server is listening on port "+ envConfig.port);
+app.listen(port, () => {
+    console.log("Server is listening on port "+ port);
 });
 
 const scoreRoutes = require('./app/routes/score.routes.js')(app);
 
-
-mongoose.connect(dbConfig.url, {
+mongoose.connect(process.env.MONGODB_URI || dbConfig.url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
