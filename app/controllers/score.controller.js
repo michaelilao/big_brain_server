@@ -8,6 +8,10 @@ const calculatePercentile = (score) => {
     }
     return Math.floor(score/10)
 }
+exports.test = async (req, res) => {
+    return res.status(200).json({"message": "Welcome to the Big Brain Server Test Successful"})
+
+}
 exports.addscore = async (req, res) => {
     if (!req.body) return res.status(400).send({
         message: "Missing data"
