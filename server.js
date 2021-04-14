@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors')
 const dotenv = require('dotenv')
-dotenv.config()
 const mongoose = require('mongoose');
+const MongoClient = require('mongodb').MongoClient;
+
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
 
-const dbConfig = require('./config/db.config.js');
-const envConfig = require('./config/env.config.js');
-const port = process.env.PORT || envConfig.port;
+
+dotenv.config()
+
+const uri = process.env.MONGO_DB_URI || 'mongodb://localhost:27017/bigbrain'
+const port = process.env.PORT || 8080;
+
+
 const app = express();
 
 app.use(cors())
@@ -24,13 +29,15 @@ app.listen(port, () => {
 
 const scoreRoutes = require('./app/routes/score.routes.js')(app);
 
-mongoose.connect(process.env.MONGODB_URI || dbConfig.url, {
+const connectionParams={
     useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log("Successfully connected to the database");    
-}).catch(err => {
-    console.log('Could not connect to the database. Exiting now...', err);
-    process.exit();
-});
-
+    useCreateIndex: true,
+    useUnifiedTopology: true 
+}
+mongoose.connect(uri,connectionParams)
+    .then( () => {
+        console.log('Connected to database ')
+    })
+    .catch( (err) => {
+        console.error(`Error connecting to the database. \n${err}`);
+    })
