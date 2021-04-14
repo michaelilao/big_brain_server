@@ -13,7 +13,7 @@ dotenv.config()
 const uri = process.env.MONGO_DB_URI || 'mongodb://localhost:27017/bigbrain'
 const port = process.env.PORT || 8080;
 
-console.log(uri)
+console.log("Server is connecteed to " + uri)
 const app = express();
 
 app.use(cors())
